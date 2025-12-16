@@ -11,10 +11,15 @@ const playfair = Playfair_Display({
   variable: '--font-playfair'
 });
 
-export const metadata: Metadata = {
-  title: 'Дарья: Портрет в 20 кадрах',
-  description: 'Интерактивный цифровой портрет к 20-летию',
-};
+export const metadata = {
+  title: 'С Днем Рождения, Дарья!',
+  description: 'Персональный сайт-подарок с интерактивными элементами',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
+}
 
 export default function RootLayout({
   children,
