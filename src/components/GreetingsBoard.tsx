@@ -555,9 +555,6 @@ export default function GreetingsBoard() {
                                     <Heart className={`w-3 h-3 ${likedGreetings.has(greeting.id) ? 'fill-red-500 text-red-500' : ''}`} />
                                     <span>{greeting.likes || 0}</span>
                                   </div>
-                                  <div className="text-xs text-white/40">
-                                    {new Date(greeting.created_at).toLocaleDateString('ru-RU')}
-                                  </div>
                                 </div>
                               </div>
 
@@ -592,4 +589,5 @@ export default function GreetingsBoard() {
       </div>
     </div>
   );
+
 }
