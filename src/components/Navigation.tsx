@@ -12,16 +12,17 @@ const navItems = [
   { href: '/hobbies', label: 'Миры увлечений', icon: Gamepad2, alwaysAccessible: false },
   { href: '/puzzle', label: 'Секретный пазл', icon: Puzzle, alwaysAccessible: false },
   { href: '/design-studio', label: 'Кабинет дизайна', icon: Palette, alwaysAccessible: false },
-  { href: '/greetings', label: 'Поздравления', icon: MessageSquare, alwaysAccessible: true }, // Доступна всегда
+  { href: '/greetings', label: 'Поздравления', icon: MessageSquare, alwaysAccessible: true },
 ];
 
-// Целевая дата разблокировки: 19 декабря 2025, 00:00 по Москве
+// Для тестирования - можно временно поставить ближайшую дату
 const UNLOCK_DATE = new Date('2025-12-19T00:00:00+03:00');
+// Для теста: const UNLOCK_DATE = new Date(Date.now() + 10000); // через 10 секунд
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState('');
-  const [isUnlocked, setIsUnlocked] = useState(true); // По умолчанию true для тестирования
+  const [isUnlocked, setIsUnlocked] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
   
@@ -34,11 +35,9 @@ export default function Navigation() {
       const unlocked = now >= UNLOCK_DATE;
       setIsUnlocked(unlocked);
       
-      // Если страница заблокирована и пользователь пытается получить к ней доступ
       if (!unlocked && pathname !== '/' && pathname !== '/greetings') {
         const currentItem = navItems.find(item => item.href === pathname);
         if (currentItem && !currentItem.alwaysAccessible) {
-          // Перенаправляем на главную, если пытается получить доступ к заблокированной странице
           router.push('/');
         }
       }
@@ -79,10 +78,8 @@ export default function Navigation() {
     const item = navItems.find(item => item.href === href);
     if (!item) return false;
     
-    // Главная и поздравления всегда доступны
     if (item.alwaysAccessible) return true;
     
-    // Остальные страницы только после 19 декабря
     return isUnlocked;
   };
 
@@ -91,7 +88,6 @@ export default function Navigation() {
     if (!isPageAccessible(href)) {
       e.preventDefault();
       
-      // Показываем модальное окно с обратным отсчетом
       const now = new Date();
       const diff = UNLOCK_DATE.getTime() - now.getTime();
       
@@ -102,19 +98,23 @@ export default function Navigation() {
           <div class="bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 max-w-sm border border-white/20">
             <div class="text-center">
               <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-phoenix-red to-lily-gold flex items-center justify-center">
-                <Lock class="w-8 h-8 text-white" />
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
               </div>
               <h3 class="text-xl font-bold mb-2">Доступ откроется 19.12.25</h3>
               <p class="text-white/70 mb-4">Страница "${label}" будет доступна в день рождения Дарьи!</p>
               <div class="bg-black/50 rounded-lg p-4 mb-4">
                 <div class="flex items-center justify-center gap-2 text-sm text-white/60 mb-2">
-                  <Clock class="w-4 h-4" />
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
                   <span>Осталось времени:</span>
                 </div>
-                <div class="text-2xl font-bold text-lily-gold">${timeLeft}</div>
+                <div class="text-2xl font-bold text-yellow-400">${timeLeft}</div>
               </div>
               <button onclick="this.parentElement.parentElement.parentElement.remove()" 
-                class="px-6 py-2 bg-phoenix-red rounded-lg hover:bg-phoenix-red/80 transition-colors">
+                class="px-6 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors text-white">
                 Понятно
               </button>
             </div>
@@ -122,7 +122,6 @@ export default function Navigation() {
         `;
         document.body.appendChild(modal);
         
-        // Удаляем модалку при клике на фон
         modal.addEventListener('click', (e) => {
           if (e.target === modal) {
             modal.remove();
@@ -134,7 +133,7 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Десктопная навигация */}
+      {/* Десктопная навигация (центр) */}
       <nav className={`fixed top-4 left-1/2 -translate-x-1/2 hidden md:block z-40 ${isHomePage ? 'opacity-90 hover:opacity-100' : ''}`}>
         <div className={`flex items-center gap-2 backdrop-blur-md rounded-full px-5 py-2.5 border transition-all duration-300 ${
           isHomePage 
@@ -153,7 +152,7 @@ export default function Navigation() {
                   onClick={(e) => !accessible && handleNavigation(e, item.href, item.label)}
                   className={`relative flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
                     isActive
-                      ? 'text-white bg-phoenix-red/25'
+                      ? 'text-white bg-red-600/25'
                       : accessible
                         ? 'text-white/80 hover:text-white hover:bg-white/10'
                         : 'text-white/30 cursor-not-allowed'
@@ -166,11 +165,10 @@ export default function Navigation() {
                     <Lock className="w-3 h-3 ml-1" />
                   )}
                   {isActive && (
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-phoenix-red rounded-full"></div>
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-red-600 rounded-full"></div>
                   )}
                 </Link>
                 
-                {/* Подсказка для заблокированных страниц */}
                 {!accessible && (
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-black/80 backdrop-blur-sm rounded-lg border border-white/20 text-xs whitespace-nowrap opacity-0 hover:opacity-100 pointer-events-none transition-opacity">
                     <div className="flex items-center gap-2">
@@ -185,7 +183,7 @@ export default function Navigation() {
         </div>
       </nav>
 
-      {/* Мобильная навигация */}
+      {/* Мобильная навигация (левый верхний угол) */}
       <nav className={`fixed top-3 left-3 z-40 md:hidden ${isHomePage ? 'opacity-90 hover:opacity-100' : ''}`}>
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -194,6 +192,7 @@ export default function Navigation() {
               ? 'bg-black/40 border-white/20 hover:bg-black/60' 
               : 'bg-black/60 border-white/25'
           }`}
+          aria-label="Меню навигации"
         >
           {isOpen ? (
             <X className="w-4 h-4 text-white" />
@@ -203,8 +202,8 @@ export default function Navigation() {
         </button>
 
         {isOpen && (
-          <div className="absolute top-12 right-0 w-56 bg-black/90 backdrop-blur-md rounded-xl border border-white/20 p-3">
-            <div className="space-y-1">
+          <div className="absolute top-12 left-0 w-64 bg-black/95 backdrop-blur-md rounded-xl border border-white/20 p-4 shadow-2xl">
+            <div className="space-y-1 mb-4">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -223,37 +222,43 @@ export default function Navigation() {
                           setIsOpen(false);
                         }
                       }}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                         isActive
-                          ? 'text-white bg-phoenix-red/30'
+                          ? 'text-white bg-red-600/30'
                           : accessible
                             ? 'text-white/80 hover:text-white hover:bg-white/10'
                             : 'text-white/30 cursor-not-allowed'
                       }`}
                     >
-                      <Icon className="w-3.5 h-3.5" />
-                      <span className="font-medium text-sm">{item.label}</span>
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="font-medium text-sm flex-grow">{item.label}</span>
                       {!accessible && (
-                        <Lock className="w-3 h-3 ml-auto" />
+                        <Lock className="w-3.5 h-3.5 flex-shrink-0" />
                       )}
                       {isActive && accessible && (
-                        <div className="ml-auto w-1.5 h-1.5 bg-phoenix-red rounded-full"></div>
+                        <div className="w-2 h-2 bg-red-600 rounded-full flex-shrink-0"></div>
                       )}
                     </Link>
                   </div>
                 );
               })}
-              
-              <div className="pt-3 border-t border-white/10">
-                {/* Секция с таймером разблокировки */}
-                <div className="px-3 py-2 bg-black/50 rounded-lg mb-2">
-                  <div className="flex items-center gap-2 text-xs text-white/60 mb-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Полная разблокировка:</span>
-                  </div>
-                  <div className="text-sm font-bold text-lily-gold">{timeLeft}</div>
-                  <div className="text-xs text-white/40 mt-1">19 декабря 00:00 (МСК)</div>
+            </div>
+            
+            {/* Таймер разблокировки */}
+            <div className="pt-3 border-t border-white/10">
+              <div className="px-4 py-3 bg-black/50 rounded-lg">
+                <div className="flex items-center gap-2 text-xs text-white/60 mb-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Полная разблокировка:</span>
                 </div>
+                <div className="text-sm font-bold text-yellow-400 mb-1">{timeLeft}</div>
+                <div className="text-xs text-white/40">19 декабря 00:00 (МСК)</div>
+              </div>
+              
+              {/* Подсказка про пасхалку */}
+              <div className="flex items-center gap-2 px-4 py-2 text-white/50 text-xs mt-3">
+                <Lock className="w-2.5 h-2.5" />
+                <span>Найди пасхалку с логотипом →</span>
               </div>
             </div>
           </div>
@@ -264,7 +269,7 @@ export default function Navigation() {
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 text-xs text-white/50">
         <div className="w-24 h-1 bg-white/10 rounded-full overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-phoenix-red to-lily-gold transition-all duration-300"
+            className="h-full bg-gradient-to-r from-red-600 to-yellow-400 transition-all duration-300"
             style={{
               width: pathname === '/' ? '14%' :
                      pathname === '/evolution' ? '28%' :
@@ -279,12 +284,12 @@ export default function Navigation() {
         <span className="text-xs">Путешествие</span>
       </div>
 
-      {/* Баннер разблокировки (если все еще заблокировано) */}
+      {/* Баннер разблокировки */}
       {!isUnlocked && pathname !== '/' && pathname !== '/greetings' && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="bg-gray-900/90 backdrop-blur-sm rounded-2xl p-8 max-w-md border border-white/20 mx-4">
             <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-phoenix-red to-lily-gold flex items-center justify-center animate-pulse">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-600 to-yellow-400 flex items-center justify-center animate-pulse">
                 <Lock className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-3">Доступ откроется 19 декабря!</h3>
@@ -297,12 +302,13 @@ export default function Navigation() {
                   <Clock className="w-5 h-5" />
                   <span>До разблокировки осталось:</span>
                 </div>
-                <div className="text-3xl font-bold text-lily-gold animate-pulse">{timeLeft}</div>
+                <div className="text-3xl font-bold text-yellow-400 animate-pulse">{timeLeft}</div>
                 <div className="text-sm text-white/40 mt-3">19 декабря 2025, 00:00 по Москве</div>
               </div>
               <Link
                 href="/"
-                className="inline-block px-8 py-3 bg-gradient-to-r from-phoenix-red to-lily-gold rounded-lg font-semibold hover:shadow-xl transition-all"
+                className="inline-block px-8 py-3 bg-gradient-to-r from-red-600 to-yellow-400 rounded-lg font-semibold hover:shadow-xl transition-all text-white"
+                onClick={() => setIsOpen(false)}
               >
                 Вернуться на главную
               </Link>
