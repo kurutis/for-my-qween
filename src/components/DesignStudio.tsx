@@ -4,10 +4,34 @@ import { motion } from 'framer-motion';
 import { Figma, Layers, Code, Palette, Download, Eye } from 'lucide-react';
 
 const projects = [
-  { title: 'Бренд-бук "Феникс"', year: 2023, status: 'Дипломный проект' },
-  { title: 'Логотип "自分"', year: 2022, status: 'Персональный бренд' },
-  { title: 'UI/Kit для приложения', year: 2023, status: 'Курсовая работа' },
-  { title: 'Айдентика кафе', year: 2022, status: 'Учебный проект' },
+  { 
+    title: '"Дом Вязанных Историй"', 
+    year: 2025, 
+    status: 'Дипломный проект',
+    image: '/table/diplom.png',
+    description: 'Веб-сайт для магазина вязанных изделий ручной работы'
+  },
+  { 
+    title: 'Логотип "mocki"', 
+    year: 2024, 
+    status: 'Персональный бренд',
+    image: '/icons/logo.svg',
+    description: 'Персональный логотип'
+  },
+  { 
+    title: 'Trowool', 
+    year: 2024, 
+    status: 'Курсовая работа',
+    image: '/table/trowooll.png',
+    description: 'Дизайн сайта для бренда шерстяных изделий'
+  },
+  { 
+    title: 'Коллажик к песне', 
+    year: 2022, 
+    status: 'Учебный проект',
+    image: '/table/collage.png',
+    description: 'Художественный коллаж, вдохновлённый любимой песней'
+  },
 ];
 
 export default function DesignStudio() {
@@ -66,16 +90,28 @@ export default function DesignStudio() {
                 <h4 className="text-lg font-semibold mb-4">Активный файл</h4>
                 <div className="bg-black/50 rounded-xl p-4 border-2 border-cyan-500/30">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-pink-500 rounded-lg flex items-center justify-center">
-                      <span className="text-lg font-bold text-white">自分</span>
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img 
+                        src="/icons/logo.svg" 
+                        alt="Логотип mocki" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const fallback = document.createElement('div');
+                          fallback.className = 'w-full h-full flex items-center justify-center text-white font-bold text-sm bg-gradient-to-br from-cyan-500 to-pink-500';
+                          fallback.textContent = 'mocki';
+                          target.parentNode?.appendChild(fallback);
+                        }}
+                      />
                     </div>
                     <div>
-                      <p className="font-bold">personal-brand.fig</p>
+                      <p className="font-bold">жопный лого Даши.svg</p>
                       <p className="text-sm text-white/60">Изменен сегодня</p>
                     </div>
                   </div>
                   <p className="mt-3 text-sm text-white/70">
-                    Персональный логотип «себя» — символ самопознания и творческого роста
+                    Персональный логотип «mocki» — символ самопознания и творческого роста
                   </p>
                 </div>
               </div>
@@ -107,26 +143,47 @@ export default function DesignStudio() {
                     className="group relative"
                   >
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/20 to-pink-500/20 rounded-xl blur opacity-0 group-hover:opacity-50 transition duration-300"></div>
-                    <div className="relative bg-black/50 rounded-xl p-6 border border-white/10 group-hover:border-cyan-500/30 transition-colors">
-                      <div className="flex justify-between items-start mb-4">
-                        <h4 className="text-lg font-bold">{project.title}</h4>
-                        <span className="text-sm px-3 py-1 bg-gray-800 rounded-full">
-                          {project.year}
-                        </span>
-                      </div>
-                      <p className="text-white/60 mb-4">{project.status}</p>
-                      <div className="h-32 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg mb-4 flex items-center justify-center">
-                        <div className="text-4xl opacity-30">
-                          {index === 0 && '🔥'}
-                          {index === 1 && '🎴'}
-                          {index === 2 && '📱'}
-                          {index === 3 && '☕'}
+                    <div className="relative bg-black/50 rounded-xl border border-white/10 group-hover:border-cyan-500/30 transition-colors h-full flex flex-col overflow-hidden">
+                      {/* Заголовок проекта поверх изображения */}
+                      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 via-black/50 to-transparent p-4">
+                        <div className="flex justify-between items-start">
+                          <span className="text-sm px-3 py-1 bg-black/80 rounded-full text-white">
+                            {project.year}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      
+                      {/* Изображение проекта - ЗАНИМАЕТ ВЕСЬ КОНТЕЙНЕР */}
+                      <div className="flex-grow relative min-h-[200px]">
+                        <img 
+                          src={project.image} 
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.className = 'absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900';
+                            const emoji = document.createElement('div');
+                            emoji.className = 'text-4xl opacity-30';
+                            if (index === 0) emoji.textContent = '🔥';
+                            else if (index === 1) emoji.textContent = '🎴';
+                            else if (index === 2) emoji.textContent = '📱';
+                            else emoji.textContent = '☕';
+                            fallback.appendChild(emoji);
+                            target.parentNode?.appendChild(fallback);
+                          }}
+                        />
+                        
+                        {/* Увеличивающийся эффект при наведении */}
+                        <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105 transform"></div>
+                      </div>
+                      
+                      {/* Описание под изображением (видно всегда) */}
+                      <div className="p-4 bg-black/40 backdrop-blur-sm border-t border-white/10">
+                        <p className="text-sm text-white/80 line-clamp-2">
+                          {project.description}
+                        </p>
                       </div>
                     </div>
                   </motion.div>
