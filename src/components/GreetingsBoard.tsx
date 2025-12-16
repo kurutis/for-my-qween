@@ -324,7 +324,7 @@ export default function GreetingsBoard() {
             </span>
           </h2>
           <p className="text-xl text-white/60 max-w-2xl mx-auto">
-            Все поздравления сохраняются на этой странице навмегда.
+            Все поздравления сохраняются на этой странице навсегда.
           </p>
         </motion.div>
 
@@ -591,4 +591,5 @@ export default function GreetingsBoard() {
   );
 
 }
+
 
