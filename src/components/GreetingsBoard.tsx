@@ -324,7 +324,7 @@ export default function GreetingsBoard() {
             </span>
           </h2>
           <p className="text-xl text-white/60 max-w-2xl mx-auto">
-            Все поздравления сохраняются в облачной базе данных. Можно лайкать и обновлять в реальном времени!
+            Все поздравления сохраняются на этой странице навмегда.
           </p>
         </motion.div>
 
@@ -591,3 +591,4 @@ export default function GreetingsBoard() {
   );
 
 }
+
