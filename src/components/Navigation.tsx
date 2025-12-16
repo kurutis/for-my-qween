@@ -186,7 +186,7 @@ export default function Navigation() {
       </nav>
 
       {/* Мобильная навигация */}
-      <nav className={`fixed top-3 right-3 z-40 md:hidden ${isHomePage ? 'opacity-90 hover:opacity-100' : ''}`}>
+      <nav className={`fixed top-3 left-3 z-40 md:hidden ${isHomePage ? 'opacity-90 hover:opacity-100' : ''}`}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`w-10 h-10 backdrop-blur-md rounded-full flex items-center justify-center border transition-all ${
@@ -253,11 +253,6 @@ export default function Navigation() {
                   </div>
                   <div className="text-sm font-bold text-lily-gold">{timeLeft}</div>
                   <div className="text-xs text-white/40 mt-1">19 декабря 00:00 (МСК)</div>
-                </div>
-                
-                <div className="flex items-center gap-1.5 px-3 py-2 text-white/50 text-xs">
-                  <Lock className="w-2.5 h-2.5" />
-                  <span>Нажми 20 раз на логотип</span>
                 </div>
               </div>
             </div>
