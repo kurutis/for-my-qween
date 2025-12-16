@@ -11,7 +11,7 @@ export default function FallbackImage({ category, size = 'medium' }: FallbackIma
       default: return 'w-32 h-32';
     }
   };
-
+  
   const getGradient = () => {
     switch (category) {
       case 'childhood':
