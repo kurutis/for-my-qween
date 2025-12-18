@@ -118,7 +118,7 @@ export default function PuzzleGame() {
     setTimeout(() => setIsLoading(false), 300);
   }, [createSolvedPuzzle, shufflePuzzle]);
 
-  // Функция для автоматической сборки пазла
+  // Функция для автоматической сборки пазла (упрощенная и надежная)
   const autoSolvePuzzle = useCallback(async () => {
     if (isSolving || gameCompleted) return;
     
@@ -126,94 +126,48 @@ export default function PuzzleGame() {
     setShowAutoSolveButton(false);
     
     const solvedPuzzle = createSolvedPuzzle();
-    const currentPuzzle = puzzle.map(row => [...row]);
     
-    // Находим путь решения (упрощенный алгоритм)
-    const movesToSolve: [number, number][] = [];
-    const tempPuzzle = currentPuzzle.map(row => [...row]);
+    // Вместо сложного алгоритма делаем простую анимацию сборки
+    const steps = 30; // Количество шагов анимации
+    const initialPuzzle = puzzle.map(row => [...row]);
     
-    // Простой алгоритм: собираем построчно
-    for (let targetRow = 0; targetRow < PUZZLE_SIZE; targetRow++) {
-      for (let targetCol = 0; targetCol < PUZZLE_SIZE; targetCol++) {
-        const targetValue = solvedPuzzle[targetRow][targetCol];
-        if (targetValue === EMPTY_VALUE) continue;
-        
-        // Находим текущую позицию нужной клетки
-        let currentRow = -1;
-        let currentCol = -1;
-        
-        for (let i = targetRow; i < PUZZLE_SIZE; i++) {
-          for (let j = 0; j < PUZZLE_SIZE; j++) {
-            if (tempPuzzle[i][j] === targetValue) {
-              currentRow = i;
-              currentCol = j;
-              break;
-            }
+    // Анимация постепенного превращения в решенный пазл
+    for (let step = 1; step <= steps; step++) {
+      await new Promise(resolve => setTimeout(resolve, 50)); // Интервал 50мс
+    
+      // Создаем промежуточное состояние
+      const intermediatePuzzle = initialPuzzle.map((row, rowIdx) =>
+        row.map((value, colIdx) => {
+          const solvedValue = solvedPuzzle[rowIdx][colIdx];
+          
+          // Простой способ: постепенно заменяем значения на решенные
+          if (Math.random() < step / steps) {
+            return solvedValue;
           }
-          if (currentRow !== -1) break;
-        }
-        
-        if (currentRow === targetRow && currentCol === targetCol) {
-          continue; // Клетка уже на месте
-        }
-        
-        // Добавляем ходы для перемещения клетки на нужное место
-        // (упрощенная логика, в реальности нужен более сложный алгоритм)
-        movesToSolve.push([currentRow, currentCol]);
-      }
+          return value;
+        })
+      );
+      
+      setPuzzle(intermediatePuzzle);
     }
     
-    // Анимация перемещения клеток
-    let currentIndex = 0;
-    
-    const animateNextMove = () => {
-      if (currentIndex >= movesToSolve.length || gameCompleted) {
-        // Если все ходы выполнены, устанавливаем решенный пазл
-        setPuzzle(solvedPuzzle);
-        setMoves(prev => prev + movesToSolve.length);
+    // Устанавливаем полностью решенный пазл
+    setTimeout(() => {
+      setPuzzle(solvedPuzzle);
+      setMoves(prev => prev + 50); // Добавляем "ходы" за анимацию
+      
+      // Завершаем игру
+      setTimeout(() => {
+        setGameCompleted(true);
         setIsSolving(false);
         
-        // Завершаем игру через небольшую задержку
+        // Переход на страницу победы
         setTimeout(() => {
-          setGameCompleted(true);
-          setTimeout(() => {
-            router.push('/win');
-          }, 2000);
-        }, 1000);
-        return;
-      }
-      
-      const [row, col] = movesToSolve[currentIndex];
-      
-      // Находим пустую клетку
-      let emptyRow = -1;
-      let emptyCol = -1;
-      for (let i = 0; i < PUZZLE_SIZE; i++) {
-        for (let j = 0; j < PUZZLE_SIZE; j++) {
-          if (tempPuzzle[i][j] === EMPTY_VALUE) {
-            emptyRow = i;
-            emptyCol = j;
-            break;
-          }
-        }
-        if (emptyRow !== -1) break;
-      }
-      
-      if (emptyRow !== -1 && emptyCol !== -1) {
-        // Меняем местами клетку и пустую
-        tempPuzzle[emptyRow][emptyCol] = tempPuzzle[row][col];
-        tempPuzzle[row][col] = EMPTY_VALUE;
-        
-        // Обновляем состояние с анимацией
-        setPuzzle(tempPuzzle.map(row => [...row]));
-        setMoves(prev => prev + 1);
-      }
-      
-      currentIndex++;
-      setTimeout(animateNextMove, 150); // Интервал между ходами
-    };
+          router.push('/win');
+        }, 2000);
+      }, 1000);
+    }, 300);
     
-    animateNextMove();
   }, [puzzle, isSolving, gameCompleted, createSolvedPuzzle, router]);
 
   // Проверка завершения игры
@@ -460,12 +414,15 @@ export default function PuzzleGame() {
                   <button
                     onClick={autoSolvePuzzle}
                     disabled={isSolving}
-                    className="w-full p-3 rounded-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 flex items-center gap-2 justify-center group"
+                    className="w-full p-3 rounded-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 flex items-center gap-2 justify-center group relative overflow-hidden"
                   >
                     {isSolving ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Собираю...</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 animate-pulse"></div>
+                        <div className="relative z-10 flex items-center gap-2">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span>Собираю...</span>
+                        </div>
                       </>
                     ) : (
                       <>
@@ -558,8 +515,19 @@ export default function PuzzleGame() {
                               key={`${rowIndex}-${colIndex}-${value}`}
                               layout
                               initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.2 }}
+                              animate={{ 
+                                opacity: 1, 
+                                scale: 1,
+                                rotate: isSolving ? [0, 5, -5, 0] : 0
+                              }}
+                              transition={{ 
+                                duration: 0.2,
+                                rotate: isSolving ? {
+                                  repeat: Infinity,
+                                  duration: 0.5,
+                                  ease: "linear"
+                                } : undefined
+                              }}
                               onClick={() => handleCellClick(rowIndex, colIndex)}
                               disabled={!clickable || gameCompleted || isSolving}
                               className={`
@@ -577,7 +545,6 @@ export default function PuzzleGame() {
                                   ? 'ring-2 ring-green-500 ring-opacity-50'
                                   : ''
                                 }
-                                ${isSolving ? 'animate-pulse' : ''}
                               `}
                               style={{
                                 width: `${getCellSize()}px`,
@@ -624,7 +591,7 @@ export default function PuzzleGame() {
                     </div>
                   </div>
                   
-                  {gameCompleted && (
+                  {(gameCompleted || isSolving) && (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -632,10 +599,15 @@ export default function PuzzleGame() {
                     >
                       <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full border border-green-500/30 mb-3">
                         <CheckCircle className="w-6 h-6 text-green-400" />
-                        <span className="text-green-400 font-semibold text-lg">Пазл собран!</span>
+                        <span className="text-green-400 font-semibold text-lg">
+                          {isSolving ? 'Волшебство работает!' : 'Пазл собран!'}
+                        </span>
                       </div>
                       <p className="text-white/60 text-lg">
-                        Открываем особенное поздравление...
+                        {isSolving 
+                          ? 'Падающие звёзды собирают пазл за тебя...' 
+                          : 'Открываем особенное поздравление...'
+                        }
                       </p>
                       <div className="mt-4 flex justify-center">
                         <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
